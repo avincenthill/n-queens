@@ -241,6 +241,13 @@
       let matrix = this.getMatrix();
       let mirrorMatrix = this.getMirrorMatrix(matrix);
       return this.hasAnyMajorDiagonalConflicts(mirrorMatrix);
+    },
+
+    hasAnyDiagonalConflicts: function() {
+      return (
+        this.hasAnyMajorDiagonalConflicts() ||
+        this.hasAnyMinorDiagonalConflicts()
+      );
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
