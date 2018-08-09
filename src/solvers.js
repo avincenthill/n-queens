@@ -28,16 +28,30 @@ window.countNRooksSolutions = function(n) {
   let solutions = [];
   let matrix = newBoard.getMatrix();
 
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      newBoard.togglePiece(i, j);
-      console.log(newBoard.hasAnyRooksConflicts());
-      console.log(newBoard.getMatrix());
+  //inner recursive function
+  let recurse = function(rowNum, coordinateArray, usedColumnNums) {
+    //recursive base case (last row)
+    if (rowNum === n - 1) {
+      for (let y = 0; y < n; y++) {
+        if (!usedColumnNums.includes(y)) {
+          coordinateArray.push([rowNum, y]);
+        }
+      }
+      //push finished array of coordinate tuples
+      solutions.push(coordinateArray);
+    } else {
+      for (let y = 0; y < n; y++) {
+        if (!usedColumnNums.includes(y)) {
+          let newusedColumnNums = usedColumnNums.concat(y);
+          coordinateArray.push([rowNum, y]);
+          recurse(rowNum + 1, coordinateArray, newusedColumnNums);
+        }
+      }
     }
-  }
-
-  let solutionCount = 1; //solutions.length;
-
+  };
+  //invoke recursive inner function on first row, with no coordinates or used columns
+  recurse(0, [], []);
+  let solutionCount = solutions.length;
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
