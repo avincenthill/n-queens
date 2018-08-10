@@ -227,14 +227,12 @@
       //O(n^2) time complexity
       let index = minorDiagonalColumnIndexAtFirstRow;
       let n = this.attributes.n;
-      let matrix = this.rows();
-      if (index >= n || index <= -n) {
-        return false;
-      }
+      let matrix = this.rows().reverse();
+      // let matrix = math.transpose(this.rows());
       let total = 0;
       for (let i = 0; i < n; i++) {
-        if (matrix[i][-i + index] !== undefined) {
-          total += matrix[i][-i + index];
+        if (matrix[i][i + index] !== undefined) {
+          total += matrix[i][i + index];
         }
         if (total > 1) {
           return true;
@@ -244,13 +242,20 @@
       return false;
     },
 
+    mirrorMatrix: function() {
+      let matrix = this.rows();
+      for (let i = 0; i < matrix.length; i++) {
+        matrix[i] = matrix[i].reverse();
+      }
+      return matrix;
+    },
+
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
       //O(n^2) time complexity
       let n = this.attributes.n;
       let hasConflict = false;
-      // debugger;
-      for (let i = n - 1; i > 0; i--) {
+      for (let i = -2 * n; i < 2 * n; i++) {
         hasConflict = hasConflict || this.hasMinorDiagonalConflictAt(i);
       }
       return hasConflict;
