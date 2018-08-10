@@ -85,6 +85,13 @@
     },
 
     hasAnyQueensConflicts: function() {
+      // if (
+      //   this.hasAnyRooksConflicts() ||
+      //   this.hasAnyMajorDiagonalConflicts() ||
+      //   this.hasAnyMinorDiagonalConflicts()
+      // ) {
+      //   console.log('Queen conflict!', this);
+      // }
       return (
         this.hasAnyRooksConflicts() ||
         this.hasAnyMajorDiagonalConflicts() ||
@@ -179,46 +186,37 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(
       //O(n) time complexity
-      majorDiagonalColumnIndexAtFirstRow,
-      optionalMatrix
+      majorDiagonalColumnIndexAtFirstRow
     ) {
-      let matrix = optionalMatrix || this.getMatrix();
+      let index = majorDiagonalColumnIndexAtFirstRow;
       let n = this.attributes.n;
-      let total = 0;
-      if (
-        majorDiagonalColumnIndexAtFirstRow >= n ||
-        majorDiagonalColumnIndexAtFirstRow <= -n
-      ) {
+      let matrix = this.rows();
+      if (index >= n || index <= -n) {
         return false;
-      } else {
-        for (let i = 0; i < n; i++) {
-          if (matrix[i][i + majorDiagonalColumnIndexAtFirstRow] !== undefined) {
-            total += matrix[i][i + majorDiagonalColumnIndexAtFirstRow];
-          }
+      }
+      let total = 0;
+      for (let i = 0; i < n; i++) {
+        if (matrix[i][i + index] !== undefined) {
+          total += matrix[i][i + index];
+        }
+        if (total > 1) {
+          return true;
         }
       }
-      return total > 1 ? true : false;
+
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
-    hasAnyMajorDiagonalConflicts: function(optionalMatrix) {
+    hasAnyMajorDiagonalConflicts: function() {
       //O(n) time complexity
       let n = this.attributes.n;
-      let matrix = optionalMatrix || this.getMatrix();
       let hasConflict = false;
-      for (let i = -(n - 1); i < matrix.length; i++) {
-        hasConflict = this.hasMajorDiagonalConflictAt(i, matrix) || hasConflict;
+      // debugger;
+      for (let i = -n + 1; i < n; i++) {
+        hasConflict = hasConflict || this.hasMajorDiagonalConflictAt(i);
       }
       return hasConflict;
-    },
-
-    getMirrorMatrix: function(matrix) {
-      //O(n^2) time complexity
-      let mirrorMatrix = [];
-      for (array of matrix) {
-        mirrorMatrix.push(array.reverse());
-      }
-      return mirrorMatrix;
     },
 
     // Minor Diagonals - go from top-right to bottom-left
@@ -227,20 +225,35 @@
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       //O(n^2) time complexity
-      let matrix = this.getMatrix();
-      let mirrorMatrix = this.getMirrorMatrix(matrix);
-      return this.hasMajorDiagonalConflictAt(
-        minorDiagonalColumnIndexAtFirstRow,
-        mirrorMatrix
-      );
+      let index = minorDiagonalColumnIndexAtFirstRow;
+      let n = this.attributes.n;
+      let matrix = this.rows();
+      if (index >= n || index <= -n) {
+        return false;
+      }
+      let total = 0;
+      for (let i = 0; i < n; i++) {
+        if (matrix[i][-i + index] !== undefined) {
+          total += matrix[i][-i + index];
+        }
+        if (total > 1) {
+          return true;
+        }
+      }
+
+      return false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
       //O(n^2) time complexity
-      let matrix = this.getMatrix();
-      let mirrorMatrix = this.getMirrorMatrix(matrix);
-      return this.hasAnyMajorDiagonalConflicts(mirrorMatrix);
+      let n = this.attributes.n;
+      let hasConflict = false;
+      // debugger;
+      for (let i = n - 1; i > 0; i--) {
+        hasConflict = hasConflict || this.hasMinorDiagonalConflictAt(i);
+      }
+      return hasConflict;
     },
 
     hasAnyDiagonalConflicts: function() {
